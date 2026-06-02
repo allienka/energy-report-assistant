@@ -1,0 +1,9 @@
+Site,Device,Month,Consumption_kWh,COP,Alarms
+Helsinki,Pump A,2026-05,1200,3.5,2
+Helsinki,Pump A,2026-06,1450,3.1,4
+Espoo,Pump B,2026-05,950,3.8,1
+Espoo,Pump B,2026-06,980,3.7,1
+Vantaa,Pump C,2026-05,2200,3.2,3
+Vantaa,Pump C,2026-06,2700,2.8,6
+Turku,Pump D,2026-05,1500,3.6,0
+Turku,Pump D,2026-06,1520,3.5,1
