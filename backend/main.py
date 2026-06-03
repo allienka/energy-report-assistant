@@ -101,4 +101,7 @@ def monthly_comparison():
                 most_alarms["TotalAlarms"]
             )
         }
-    }      
+    }
+@app.get("/anomalies")
+def anomalies():
+    return {"findings": []}         
