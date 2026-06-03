@@ -37,21 +37,24 @@ def report_summary():
         "average_cop": round(df["COP"].mean(), 2),
         "total_alarms": int(df["Alarms"].sum())
     }  
-
-@app.get("/monthly-comparison")
-def monthly_comparison():
+def create_comparison():
     df = pd.read_csv("data/sample_report.csv")
 
-    # Split data by month
     may = df[df["Month"] == "2026-05"]
     june = df[df["Month"] == "2026-06"]
 
-    # Join months by device
     comparison = may.merge(
         june,
         on="Device",
         suffixes=("_may", "_june")
     )
+
+    return comparison
+
+@app.get("/monthly-comparison")
+def monthly_comparison():
+    df = pd.read_csv("data/sample_report.csv")
+    comparison = create_comparison()
 
     # Calculate changes
     comparison["consumption_change"] = (
@@ -104,4 +107,42 @@ def monthly_comparison():
     }
 @app.get("/anomalies")
 def anomalies():
-    return {"findings": []}         
+    comparison = create_comparison()
+
+    comparison["cop_change"] = (
+        comparison["COP_june"]
+        - comparison["COP_may"]
+    )
+
+    comparison["alarms_diff"] = (
+        comparison["Alarms_june"]
+        - comparison["Alarms_may"]
+    )
+
+    cop_anomalies = comparison[
+        abs(comparison["cop_change"]) > 1
+    ]
+
+    alarm_anomalies = comparison[
+        comparison["alarms_diff"] > 5
+    ]
+
+    findings = []
+
+    for index, row in cop_anomalies.iterrows():
+        findings.append({
+            "type": "cop_change",
+            "device": row["Device"],
+            "value": round(row["cop_change"], 2)
+        })
+
+    for index, row in alarm_anomalies.iterrows():
+        findings.append({
+            "type": "alarm_increase",
+            "device": row["Device"],
+            "value": int(row["alarms_diff"])
+        })
+
+    return {
+        "findings": findings
+    }     
