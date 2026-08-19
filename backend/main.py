@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 import pandas as pd
+from backend.ai import ask_ai
 
 
 
@@ -155,3 +156,11 @@ def anomalies():
         "findings": findings
     }
     
+@app.get("/ai-summary")
+def ai_summary():
+    findings = get_anomalies()
+    summary = ask_ai(findings)
+
+    return {
+        "summary": summary
+    }

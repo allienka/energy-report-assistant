@@ -9,7 +9,7 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 def ask_ai(findings):
     response = client.responses.create(
     model="gpt-5.6",
-    input="""
+    input=f"""
             You are an energy analyst.
 
             Analyze these findings:
