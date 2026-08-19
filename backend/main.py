@@ -3,6 +3,7 @@ import pandas as pd
 
 
 
+
 app = FastAPI(
     title="Energy Report Assistant",
     description="AI-powered platform for energy and operational report analysis",
@@ -105,44 +106,52 @@ def monthly_comparison():
             )
         }
     }
-@app.get("/anomalies")
-def anomalies():
+    
+def get_anomalies():
     comparison = create_comparison()
-
+    
     comparison["cop_change"] = (
         comparison["COP_june"]
-        - comparison["COP_may"]
-    )
-
+            - comparison["COP_may"]
+        )
+    
     comparison["alarms_diff"] = (
-        comparison["Alarms_june"]
-        - comparison["Alarms_may"]
-    )
-
+            comparison["Alarms_june"]
+            - comparison["Alarms_may"]
+        )
+    
     cop_anomalies = comparison[
-        abs(comparison["cop_change"]) > 1
-    ]
-
+            abs(comparison["cop_change"]) > 1
+        ]
+    
     alarm_anomalies = comparison[
-        comparison["alarms_diff"] > 5
-    ]
-
+            comparison["alarms_diff"] > 5
+        ]
+    
     findings = []
-
+    
     for index, row in cop_anomalies.iterrows():
-        findings.append({
-            "type": "cop_change",
-            "device": row["Device"],
-            "value": round(row["cop_change"], 2)
-        })
-
+            findings.append({
+                "type": "cop_change",
+                "device": row["Device"],
+                "value": round(row["cop_change"], 2)
+            })
+    
     for index, row in alarm_anomalies.iterrows():
-        findings.append({
-            "type": "alarm_increase",
-            "device": row["Device"],
-            "value": int(row["alarms_diff"])
-        })
-
+            findings.append({
+                "type": "alarm_increase",
+                "device": row["Device"],
+                "value": int(row["alarms_diff"])
+            })
+    
+    return findings     
+        
+       
+@app.get("/anomalies")
+def anomalies():
+    findings=get_anomalies()
+    
     return {
         "findings": findings
-    }     
+    }
+    
