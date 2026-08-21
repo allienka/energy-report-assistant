@@ -21,16 +21,3 @@ def ask_ai(findings):
     return response.output_text     
 
 
-test_findings = [
-    {
-        "type": "cop_drop",
-        "device": "Pump A",
-        "value": -1.2
-    },
-    {
-        "type": "alarm_increase",
-        "device": "Pump C",
-        "value": 6
-    }
-]
-print(ask_ai(test_findings))
