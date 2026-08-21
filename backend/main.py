@@ -159,6 +159,9 @@ def anomalies():
 @app.get("/ai-summary")
 def ai_summary():
     findings = get_anomalies()
+    if not findings:
+        return {"summary": "No significant anomalies detected."}
+    
     summary = ask_ai(findings)
 
     return {
