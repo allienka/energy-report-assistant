@@ -41,15 +41,22 @@ def report_summary():
     }  
 def create_comparison():
     df = pd.read_csv("data/sample_report.csv")
+    
+    months = sorted(df["Month"].unique())
+    
+    previous_month = months[-2]
+    latest_month = months[-1]
 
-    may = df[df["Month"] == "2026-05"]
-    june = df[df["Month"] == "2026-06"]
 
-    comparison = may.merge(
-        june,
-        on="Device",
-        suffixes=("_may", "_june")
+    previous = df[df["Month"] == previous_month]
+    latest = df[df["Month"] == latest_month]
+    
+    comparison = previous.merge(
+    latest,
+    on="Device",
+    suffixes=("_previous", "_latest")
     )
+    
 
     return comparison
 
@@ -60,13 +67,13 @@ def monthly_comparison():
 
     # Calculate changes
     comparison["consumption_change"] = (
-        comparison["Consumption_kWh_june"]
-        - comparison["Consumption_kWh_may"]
+        comparison["Consumption_kWh_latest"]
+        - comparison["Consumption_kWh_previous"]
     )
 
     comparison["cop_change"] = (
-        comparison["COP_june"]
-        - comparison["COP_may"]
+        comparison["COP_latest"]
+        - comparison["COP_previous"]
     )
 
     # Largest consumption increase
@@ -112,14 +119,14 @@ def get_anomalies():
     comparison = create_comparison()
     
     comparison["cop_change"] = (
-        comparison["COP_june"]
-            - comparison["COP_may"]
-        )
+        comparison["COP_latest"]
+        - comparison["COP_previous"]
+    )
     
     comparison["alarms_diff"] = (
-            comparison["Alarms_june"]
-            - comparison["Alarms_may"]
-        )
+        comparison["Alarms_latest"]
+        - comparison["Alarms_previous"]
+    )
     
     cop_anomalies = comparison[
             abs(comparison["cop_change"]) > 1
