@@ -43,20 +43,21 @@ def create_comparison():
     df = pd.read_csv("data/sample_report.csv")
     
     months = sorted(df["Month"].unique())
-    
+
+    if len(months) < 2:
+        raise ValueError("At least two months are needed for comparison")
+
     previous_month = months[-2]
     latest_month = months[-1]
 
-
     previous = df[df["Month"] == previous_month]
     latest = df[df["Month"] == latest_month]
-    
+
     comparison = previous.merge(
-    latest,
-    on="Device",
-    suffixes=("_previous", "_latest")
+        latest,
+        on="Device",
+        suffixes=("_previous", "_latest")
     )
-    
 
     return comparison
 
