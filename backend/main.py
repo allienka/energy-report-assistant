@@ -114,28 +114,33 @@ def monthly_comparison():
             )
         }
     }
-    
-def get_anomalies():
-    df = pd.read_csv("data/sample_report.csv")
-    comparison = create_comparison(df)
-    
+def detect_anomalies(comparison):
+
     comparison["cop_change"] = (
         comparison["COP_latest"]
         - comparison["COP_previous"]
     )
-    
+
     comparison["alarms_diff"] = (
         comparison["Alarms_latest"]
         - comparison["Alarms_previous"]
     )
-    
+
     cop_anomalies = comparison[
-            abs(comparison["cop_change"]) > 1
-        ]
-    
+        abs(comparison["cop_change"]) > 1
+    ]
+
     alarm_anomalies = comparison[
-            comparison["alarms_diff"] > 5
-        ]
+        comparison["alarms_diff"] > 5
+    ]
+
+    return cop_anomalies, alarm_anomalies
+
+def get_anomalies():
+    
+    df = pd.read_csv("data/sample_report.csv")
+    comparison = create_comparison(df)
+    cop_anomalies, alarm_anomalies = detect_anomalies(comparison)
     
     findings = []
     
