@@ -39,8 +39,7 @@ def report_summary():
         "average_cop": round(df["COP"].mean(), 2),
         "total_alarms": int(df["Alarms"].sum())
     }  
-def create_comparison():
-    df = pd.read_csv("data/sample_report.csv")
+def create_comparison(df):
     
     months = sorted(df["Month"].unique())
 
@@ -117,7 +116,8 @@ def monthly_comparison():
     }
     
 def get_anomalies():
-    comparison = create_comparison()
+    df = pd.read_csv("data/sample_report.csv")
+    comparison = create_comparison(df)
     
     comparison["cop_change"] = (
         comparison["COP_latest"]
