@@ -142,6 +142,7 @@ def get_anomalies():
     comparison = create_comparison(df)
     cop_anomalies, alarm_anomalies = detect_anomalies(comparison)
     
+       
     findings = []
     
     for index, row in cop_anomalies.iterrows():

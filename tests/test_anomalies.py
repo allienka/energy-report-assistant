@@ -108,3 +108,20 @@ def test_one_month_is_not_enough_for_comparison():
 
     with pytest.raises(ValueError):
         create_comparison(data)    
+
+def test_multiple_anomalies_are_detected():
+    data = pd.DataFrame({
+        "Month": ["2026-05", "2026-05", "2026-06", "2026-06"],
+        "Device": ["Pump A", "Pump B", "Pump A", "Pump B"],
+        "Consumption_kWh": [1000, 1200, 1100, 1300],
+        "COP": [3.5, 3.4, 2.1, 2.0],
+        "Alarms": [2, 3, 2, 10]
+    })
+
+    comparison = create_comparison(data)
+    cop_anomalies, alarm_anomalies = detect_anomalies(comparison)
+    print(comparison)
+
+    assert len(cop_anomalies) == 2
+    assert len(alarm_anomalies) == 1
+    assert alarm_anomalies.iloc[0]["Device"] == "Pump B"        
