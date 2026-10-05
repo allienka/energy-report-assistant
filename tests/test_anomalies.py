@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 from backend.main import get_anomalies, create_comparison, detect_anomalies
 
 
@@ -95,4 +96,15 @@ def test_alarm_increase_at_threshold_is_not_anomaly():
     cop_anomalies, alarm_anomalies = detect_anomalies(comparison)
 
     assert len(alarm_anomalies) == 0    
-    
+
+def test_one_month_is_not_enough_for_comparison():
+    data = pd.DataFrame({
+        "Month": ["June"],
+        "Device": ["Pump A"],
+        "Consumption_kWh": [1000],
+        "COP": [3.5],
+        "Alarms": [2]
+    })
+
+    with pytest.raises(ValueError):
+        create_comparison(data)    
