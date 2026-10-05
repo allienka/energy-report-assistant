@@ -1,6 +1,13 @@
 import pandas as pd
 import pytest
-from backend.main import get_anomalies, create_comparison, detect_anomalies
+
+from fastapi.testclient import TestClient
+from backend.main import (
+    app,
+    create_comparison,
+    detect_anomalies,
+    get_anomalies
+)
 
 
 
@@ -120,8 +127,33 @@ def test_multiple_anomalies_are_detected():
 
     comparison = create_comparison(data)
     cop_anomalies, alarm_anomalies = detect_anomalies(comparison)
-    print(comparison)
+    
 
     assert len(cop_anomalies) == 2
     assert len(alarm_anomalies) == 1
     assert alarm_anomalies.iloc[0]["Device"] == "Pump B"        
+    
+def test_ai_summary_endpoint(monkeypatch):
+    fake_findings = [
+        {
+            "type": "cop_change",
+            "device": "Pump C",
+            "value": -1.2
+        }
+    ]
+
+    def fake_get_anomalies():
+        return fake_findings
+
+    def fake_ask_ai(findings):
+        return "Pump C shows a significant COP decrease."
+
+    monkeypatch.setattr("backend.main.get_anomalies", fake_get_anomalies)
+    monkeypatch.setattr("backend.main.ask_ai", fake_ask_ai)
+
+    client = TestClient(app)
+
+    response = client.get("/ai-summary")
+
+    assert response.status_code == 200
+    assert response.json()["summary"] == "Pump C shows a significant COP decrease."
