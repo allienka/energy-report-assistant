@@ -128,4 +128,3 @@ Azure deployment
 More advanced data pipelines
 Natural-language questions about report data
 
-After you paste and save it, **don't commit yet**. We'll do the final project check first.
