@@ -1,4 +1,5 @@
 import os
+import json
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -14,7 +15,7 @@ You are an energy analyst reviewing monthly energy data.
 
 Analyze the following detected findings:
 
-{findings}
+{json.dumps(findings, indent=2)}
 
 Write a short professional report summary.
 
