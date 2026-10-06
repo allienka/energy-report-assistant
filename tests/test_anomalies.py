@@ -157,3 +157,16 @@ def test_ai_summary_endpoint(monkeypatch):
 
     assert response.status_code == 200
     assert response.json()["summary"] == "Pump C shows a significant COP decrease."
+    
+def test_ai_summary_no_findings(monkeypatch):
+    def fake_get_anomalies():
+        return []
+
+    monkeypatch.setattr("backend.main.get_anomalies", fake_get_anomalies)
+
+    client = TestClient(app)
+
+    response = client.get("/ai-summary")
+
+    assert response.status_code == 200
+    assert response.json()["summary"] == "No significant anomalies detected."    
