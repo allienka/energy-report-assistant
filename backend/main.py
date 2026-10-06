@@ -114,8 +114,11 @@ def monthly_comparison():
             )
         }
     }
+    
+COP_CHANGE_THRESHOLD = 1
+ALARM_INCREASE_THRESHOLD = 5  
+  
 def detect_anomalies(comparison):
-
     comparison["cop_change"] = (
         comparison["COP_latest"]
         - comparison["COP_previous"]
@@ -127,11 +130,11 @@ def detect_anomalies(comparison):
     )
 
     cop_anomalies = comparison[
-        abs(comparison["cop_change"]) > 1
+        abs(comparison["cop_change"]) > COP_CHANGE_THRESHOLD
     ]
 
     alarm_anomalies = comparison[
-        comparison["alarms_diff"] > 5
+        comparison["alarms_diff"] > ALARM_INCREASE_THRESHOLD
     ]
 
     return cop_anomalies, alarm_anomalies
